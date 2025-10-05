@@ -37,5 +37,21 @@
             "experimental_mode": false,
             "analytics": true
         }
+    },
+    "lifecycle": {
+        "install": {
+            "directories": ["uploads", "cache", "logs"],
+            "database": "install.sql"
+        },
+        "activate": {
+            "message": "Demo AddOn wurde aktiviert"
+        },
+        "deactivate": {
+            "message": "Demo AddOn wurde deaktiviert"
+        },
+        "uninstall": {
+            "cleanup": ["cache/*", "logs/*"],
+            "keep_data": true
+        }
     }
 }
