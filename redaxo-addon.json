@@ -2,7 +2,7 @@
     "package": "klxm/redaxo-composer-demo-addon",
     "name": "REDAXO Composer Demo AddOn",
     "description": "Demonstration des modernen REDAXO Composer AddOn Systems",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "author": "KLXM <info@klxm.de>",
     "supportpage": "https://github.com/klxm/redaxo-composer-demo-addon",
     "requires": {
