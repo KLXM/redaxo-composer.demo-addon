@@ -1,0 +1,141 @@
+/* Demo AddOn CSS Styles */
+
+.demo-addon-panel {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.demo-addon-panel h3 {
+    color: white;
+    margin-top: 0;
+}
+
+.demo-addon-feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.demo-addon-feature-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.demo-addon-feature-list li:before {
+    content: "✓ ";
+    color: #4CAF50;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.demo-addon-debug-info {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 15px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    overflow-x: auto;
+}
+
+.demo-addon-status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.demo-addon-status-badge.active {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.demo-addon-config-table {
+    margin-top: 20px;
+}
+
+.demo-addon-config-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.demo-addon-config-table td code {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.demo-addon-form-section {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.demo-addon-form-section legend {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+    border: none;
+    padding: 0 10px;
+    margin-bottom: 20px;
+}
+
+.demo-addon-highlight {
+    background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+    border-left: 4px solid #667eea;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.demo-addon-info-box {
+    background: #e7f3ff;
+    border: 1px solid #b8daff;
+    color: #004085;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.demo-addon-info-box h5 {
+    color: #004085;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.demo-addon-info-box pre {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 10px;
+    border-radius: 3px;
+    margin: 10px 0;
+}
+
+/* Animation für das AddOn-Panel */
+@keyframes demo-addon-fade-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.demo-addon-panel {
+    animation: demo-addon-fade-in 0.5s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .demo-addon-panel {
+        padding: 15px;
+    }
+    
+    .demo-addon-debug-info {
+        font-size: 11px;
+    }
+}

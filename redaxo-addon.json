@@ -1,0 +1,30 @@
+{
+    "package": "klxm/redaxo-composer-demo-addon",
+    "name": "REDAXO Composer Demo AddOn",
+    "description": "Demonstration des modernen REDAXO Composer AddOn Systems",
+    "version": "1.0.0",
+    "author": "KLXM <info@klxm.de>",
+    "supportpage": "https://github.com/klxm/redaxo-composer-demo-addon",
+    "requires": {
+        "redaxo": "^5.12",
+        "php": "^7.4 || ^8.0"
+    },
+    "pages": {
+        "redaxo_composer_demo_addon": {
+            "title": "REDAXO Composer Demo",
+            "icon": "rex-icon fa-puzzle-piece",
+            "subpages": {
+                "main": {
+                    "title": "Übersicht"
+                },
+                "settings": {
+                    "title": "Einstellungen"
+                }
+            }
+        }
+    },
+    "default_config": {
+        "demo_setting": "Hallo REDAXO Composer!",
+        "show_debug": false
+    }
+}

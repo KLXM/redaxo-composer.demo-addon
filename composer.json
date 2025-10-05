@@ -1,0 +1,31 @@
+{
+    "name": "klxm/redaxo-composer-demo-addon",
+    "type": "redaxo-addon",
+    "description": "REDAXO Composer Demo AddOn - Demonstration des modernen AddOn Systems",
+    "keywords": ["redaxo", "addon", "composer", "demo", "redaxo-composer"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "KLXM",
+            "email": "info@klxm.de"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "redaxo/core": "^5.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "Klxm\\RedaxoComposerDemoAddon\\": "src/"
+        }
+    },
+    "extra": {
+        "redaxo": {
+            "addon-key": "redaxo_composer_demo_addon",
+            "name": "REDAXO Composer Demo AddOn",
+            "version": "1.0.0",
+            "author": "KLXM",
+            "supportpage": "https://github.com/klxm/redaxo-composer-demo-addon"
+        }
+    }
+}
