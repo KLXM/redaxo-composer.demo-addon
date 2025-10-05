@@ -18,16 +18,13 @@
  * - Datei-Kopien
  */
 
-// Beispiel: Logge Installation
-$logFile = rex_path::addonData('redaxo_composer_demo_addon', 'logs/install.log');
-$logDir = dirname($logFile);
-
-if (!is_dir($logDir)) {
-    mkdir($logDir, 0755, true);
-}
-
-$logEntry = date('Y-m-d H:i:s') . " - Demo AddOn Installation gestartet\n";
-file_put_contents($logFile, $logEntry, FILE_APPEND);
+// Beispiel: Logge Installation ins REDAXO System-Log
+// Für Composer-AddOns IMMER rex_logger verwenden, nicht rex_path::addonData()!
+rex_logger::factory()->info('REDAXO Composer Demo AddOn: Installation gestartet', [
+    'package' => 'klxm/redaxo-composer-demo-addon',
+    'php_version' => PHP_VERSION,
+    'timestamp' => date('Y-m-d H:i:s')
+]);
 
 // Beispiel: Prüfe Systemvoraussetzungen
 if (version_compare(PHP_VERSION, '7.4.0', '<')) {
@@ -35,10 +32,17 @@ if (version_compare(PHP_VERSION, '7.4.0', '<')) {
 }
 
 // Beispiel: Setze initiale Config-Werte (zusätzlich zu default_config)
-rex_config::set('redaxo_composer_demo_addon', 'installed_at', time());
-rex_config::set('redaxo_composer_demo_addon', 'install_method', 'composer');
+// Config funktioniert auch für Composer-AddOns!
+rex_config::set('klxm_redaxo-composer-demo-addon', 'installed_at', time());
+rex_config::set('klxm_redaxo-composer-demo-addon', 'install_method', 'composer');
+
+rex_logger::factory()->info('REDAXO Composer Demo AddOn: Installation erfolgreich abgeschlossen', [
+    'config_set' => true,
+    'requirements_checked' => true
+]);
 
 echo "✅ Demo AddOn erfolgreich installiert!\n";
-echo "📁 Verzeichnisse wurden angelegt\n";
-echo "📊 Datenbank-Tabellen wurden erstellt\n";
+echo "📁 Verzeichnisse wurden angelegt (via Manifest)\n";
+echo "📊 Datenbank-Tabellen wurden erstellt (via install.sql)\n";
 echo "🎉 Lifecycle-System funktioniert!\n";
+echo "📝 Logs findest du im REDAXO System-Log\n";
