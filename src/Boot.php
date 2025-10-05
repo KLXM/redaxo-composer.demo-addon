@@ -72,7 +72,7 @@ class Boot
     {
         return [
             'addon_name' => 'REDAXO Composer Demo AddOn',
-            'version' => '1.0.0',
+            'version' => '1.0.1',
             'loaded_via' => 'Composer Discovery System',
             'config' => rex_config::get('redaxo_composer_demo_addon') ?: [],
             'boot_time' => date('Y-m-d H:i:s')
