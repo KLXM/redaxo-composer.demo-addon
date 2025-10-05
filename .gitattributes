@@ -1,0 +1,6 @@
+# Export nur relevante Dateien für Composer
+# Lifecycle-Hooks MÜSSEN deployed werden - daher NICHT ignorieren!
+# Nur Development-Files ignorieren:
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/README.md export-ignore
