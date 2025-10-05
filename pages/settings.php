@@ -133,10 +133,10 @@ $manifestInfoContent = '
         <dd><code>' . htmlspecialchars(ComposerAddonHelper::getVersion('klxm/redaxo-composer-demo-addon') ?? 'unbekannt') . '</code></dd>
         
         <dt>AddOn-Pfad</dt>
-        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getPath('klxm/redaxo-composer-demo-addon')) . '</code></dd>
+        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getPath('klxm/redaxo-composer-demo-addon') ?? '') . '</code></dd>
         
         <dt>Assets-URL</dt>
-        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getAssetsUrl('klxm/redaxo-composer-demo-addon', 'demo.css')) . '</code></dd>
+        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getAssetsUrl('klxm/redaxo-composer-demo-addon', 'demo.css') ?? '') . '</code></dd>
     </dl>
     
     <h5>Code-Beispiel:</h5>
