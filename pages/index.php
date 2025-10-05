@@ -97,18 +97,33 @@ $manifestFragment->setVar('body', '
     <pre><code class="language-php">' . rex_escape('<?php
 use KLXM\Composer\ComposerAddonHelper;
 
-// Alle Settings auf einmal
+// IN BACKEND-SEITEN (Kontext verfügbar):
+// getCurrentSetting() ermittelt automatisch das aktuelle AddOn
 $settings = ComposerAddonHelper::getCurrentSettings();
-
-// Einzelne Settings mit Fallback
 $apiKey = ComposerAddonHelper::getCurrentSetting(\'api_key\', \'default-key\');
 $maxItems = ComposerAddonHelper::getCurrentSetting(\'max_items\', 5);
-$enableCaching = ComposerAddonHelper::getCurrentSetting(\'enable_caching\', false);
 
-// Arrays und verschachtelte Werte
-$featureFlags = ComposerAddonHelper::getCurrentSetting(\'feature_flags\', []);
-$newEditor = $featureFlags[\'new_editor\'] ?? false;
+// AUSSERHALB VON BACKEND-SEITEN (in Klassen, Templates, etc.):
+// Package-Name MUSS angegeben werden
+$packageName = \'klxm/redaxo-composer-demo-addon\';
+$settings = ComposerAddonHelper::getSettings($packageName);
+$apiKey = ComposerAddonHelper::getSetting($packageName, \'api_key\', \'default\');
+
+// Settings sind PRO ADDON isoliert - kein Konflikt möglich!
+// vendor1/addon → eigene Settings aus eigenem Manifest
+// vendor2/addon → eigene Settings aus eigenem Manifest
 ') . '</code></pre>
+    
+    <div class="alert alert-warning" style="margin-top: 15px;">
+        <strong><i class="rex-icon fa-exclamation-triangle"></i> Wichtig:</strong>
+        <ul>
+            <li>Settings kommen aus dem <code>default_config</code> Block im <strong>eigenen Manifest</strong></li>
+            <li>Jedes AddOn hat seine <strong>eigenen, isolierten Settings</strong></li>
+            <li>Kein Konflikt zwischen AddOns möglich (package-Name ist eindeutig)</li>
+            <li><code>getCurrentSetting()</code> funktioniert nur in Backend-Seiten (Kontext!)</li>
+            <li>In anderen Klassen: <code>getSetting($packageName, $key)</code> verwenden</li>
+        </ul>
+    </div>
 </div>
 ', false);
 
@@ -139,7 +154,13 @@ $usageFragment->setVar('body', '
                     <dt>API Key:</dt>
                     <dd><code>' . rex_escape($apiKey) . '</code></dd>
                 </dl>
-                <pre><code class="language-php">' . rex_escape('$apiKey = ComposerAddonHelper::getCurrentSetting(\'api_key\');
+                <pre><code class="language-php">' . rex_escape('// In Backend-Seiten:
+$apiKey = ComposerAddonHelper::getCurrentSetting(\'api_key\');
+
+// In anderen Klassen:
+$pkg = \'klxm/redaxo-composer-demo-addon\';
+$apiKey = ComposerAddonHelper::getSetting($pkg, \'api_key\');
+
 if ($apiKey) {
     $client = new ApiClient($apiKey);
 }') . '</code></pre>
@@ -159,8 +180,16 @@ if ($apiKey) {
                     <dt>Cache Lifetime:</dt>
                     <dd>' . rex_escape($cacheLifetime) . ' Sekunden</dd>
                 </dl>
-                <pre><code class="language-php">' . rex_escape('if (ComposerAddonHelper::getCurrentSetting(\'enable_caching\')) {
+                <pre><code class="language-php">' . rex_escape('// In Backend-Seiten:
+if (ComposerAddonHelper::getCurrentSetting(\'enable_caching\')) {
     $lifetime = ComposerAddonHelper::getCurrentSetting(\'cache_lifetime\');
+    rex_cache::set($key, $data, $lifetime);
+}
+
+// In anderen Klassen:
+$pkg = \'klxm/redaxo-composer-demo-addon\';
+if (ComposerAddonHelper::getSetting($pkg, \'enable_caching\')) {
+    $lifetime = ComposerAddonHelper::getSetting($pkg, \'cache_lifetime\');
     rex_cache::set($key, $data, $lifetime);
 }') . '</code></pre>
             </div>
@@ -187,10 +216,17 @@ if ($apiKey) {
                 <td>' . (($featureFlags['analytics'] ?? false) ? '✅ Aktiviert' : '❌ Deaktiviert') . '</td>
             </tr>
         </table>
-        <pre><code class="language-php">' . rex_escape('$flags = ComposerAddonHelper::getCurrentSetting(\'feature_flags\', []);
+        <pre><code class="language-php">' . rex_escape('// In Backend-Seiten:
+$flags = ComposerAddonHelper::getCurrentSetting(\'feature_flags\', []);
 if ($flags[\'new_editor\'] ?? false) {
-    // Neuen Editor verwenden
     $editor = new ModernEditor();
+}
+
+// In anderen Klassen (z.B. Service, Helper):
+$pkg = \'klxm/redaxo-composer-demo-addon\';
+$flags = ComposerAddonHelper::getSetting($pkg, \'feature_flags\', []);
+if ($flags[\'analytics\'] ?? false) {
+    Analytics::track($event);
 }') . '</code></pre>
     </div>
 </div>
@@ -215,10 +251,13 @@ $comparisonFragment->setVar('body', '
                     <li>✅ Definiert in <code>redaxo-addon.json</code></li>
                     <li>✅ Teil des AddOn-Codes (versioniert)</li>
                     <li>✅ Unveränderbar (Default-Werte)</li>
+                    <li>✅ <strong>Pro AddOn isoliert (package-Name)</strong></li>
                     <li>✅ Ideal für Feature-Flags, API-Defaults, etc.</li>
                 </ul>
-                <strong>Zugriff:</strong>
+                <strong>Zugriff in Backend-Seiten:</strong>
                 <pre><code>ComposerAddonHelper::getCurrentSetting(\'key\')</code></pre>
+                <strong>Zugriff in Klassen/Templates:</strong>
+                <pre><code>ComposerAddonHelper::getSetting($pkg, \'key\')</code></pre>
             </div>
         </div>
     </div>
@@ -233,6 +272,7 @@ $comparisonFragment->setVar('body', '
                     <li>✅ Gespeichert in Datenbank</li>
                     <li>✅ Vom User änderbar</li>
                     <li>✅ Überschreibt Manifest-Defaults</li>
+                    <li>✅ <strong>Namespace per AddOn-Key</strong></li>
                     <li>✅ Ideal für individuelle Konfiguration</li>
                 </ul>
                 <strong>Zugriff:</strong>
@@ -244,13 +284,25 @@ $comparisonFragment->setVar('body', '
 
 <div class="alert alert-info">
     <h4><i class="rex-icon fa-lightbulb-o"></i> Best Practice:</h4>
-    <pre><code class="language-php">' . rex_escape('// Manifest-Default als Fallback für User-Setting
+    <pre><code class="language-php">' . rex_escape('// EMPFOHLEN: Manifest-Default als Fallback für User-Setting
+
+// In Backend-Seiten:
 $manifestDefault = ComposerAddonHelper::getCurrentSetting(\'api_key\', \'\');
+$userApiKey = rex_config::get(\'my_addon\', \'api_key\', $manifestDefault);
+
+// In anderen Klassen:
+$pkg = \'vendor/my-addon\';
+$manifestDefault = ComposerAddonHelper::getSetting($pkg, \'api_key\', \'\');
 $userApiKey = rex_config::get(\'my_addon\', \'api_key\', $manifestDefault);
 
 // Oder kombiniert:
 $apiKey = rex_config::get(\'my_addon\', \'api_key\') 
-       ?: ComposerAddonHelper::getCurrentSetting(\'api_key\', \'fallback\');
+       ?: ComposerAddonHelper::getSetting($pkg, \'api_key\', \'fallback\');
+
+// WICHTIG: Settings sind pro AddOn isoliert!
+// vendor1/addon-a → eigenes Manifest, eigene Settings
+// vendor2/addon-b → eigenes Manifest, eigene Settings
+// Kein Konflikt möglich, da Package-Name eindeutig ist
 ') . '</code></pre>
 </div>
 
