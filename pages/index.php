@@ -7,6 +7,7 @@
 
 use Klxm\RedaxoComposerDemoAddon\Boot;
 use KLXM\Composer\ComposerAddonHelper;
+use KLXM\Composer\ComposerAddonDiscovery;
 
 $content = '';
 
@@ -306,6 +307,44 @@ $apiKey = rex_config::get(\'my_addon\', \'api_key\')
 ') . '</code></pre>
 </div>
 
+<div class="alert alert-warning">
+    <h4><i class="rex-icon fa-exchange"></i> Zugriff auf Settings von ANDEREN AddOns:</h4>
+    <p>Wenn dein AddOn Settings von einem anderen Composer AddOn benötigt:</p>
+    <pre><code class="language-php">' . rex_escape('// Szenario: Mein AddOn nutzt ein anderes Composer AddOn
+// z.B. "vendor/base-library" hat API-Settings
+
+// Prüfe ob das andere AddOn aktiv ist
+if (ComposerAddonHelper::isActive(\'vendor/base-library\')) {
+    // Lese Settings vom ANDEREN AddOn
+    $otherApiKey = ComposerAddonHelper::getSetting(
+        \'vendor/base-library\',  // Anderes AddOn!
+        \'api_key\',
+        \'fallback-key\'
+    );
+    
+    // Nutze die Settings
+    $client = new ApiClient($otherApiKey);
+}
+
+// Beispiel: Feature-Flag von anderem AddOn prüfen
+if (ComposerAddonHelper::isActive(\'vendor/feature-addon\')) {
+    $features = ComposerAddonHelper::getSetting(\'vendor/feature-addon\', \'features\', []);
+    if ($features[\'new_api\'] ?? false) {
+        // Nutze neue API vom anderen AddOn
+    }
+}
+
+// Beispiel: Mehrere AddOns kombinieren
+$providers = [\'vendor/provider-a\', \'vendor/provider-b\'];
+foreach ($providers as $pkg) {
+    if (ComposerAddonHelper::isActive($pkg)) {
+        $endpoint = ComposerAddonHelper::getSetting($pkg, \'api_endpoint\');
+        $services[] = new Service($endpoint);
+    }
+}
+') . '</code></pre>
+</div>
+
 <div class="well">
     <h5>Aktuelle User-Settings (aus Datenbank):</h5>
     ' . (empty($userSettings) ? '<p class="text-muted">Keine User-Settings gespeichert. Nutze die <a href="' . rex_url::currentBackendPage(['subpage' => 'settings']) . '">Einstellungen</a> Seite um welche anzulegen.</p>' : '<pre>' . rex_escape(print_r($userSettings, true)) . '</pre>') . '
@@ -313,5 +352,123 @@ $apiKey = rex_config::get(\'my_addon\', \'api_key\')
 ', false);
 
 $content .= $comparisonFragment->parse('core/page/section.php');
+
+// Praktisches Beispiel: Cross-AddOn Settings
+$crossAddonFragment = new rex_fragment();
+
+// Prüfe ob es andere Composer AddOns gibt
+$allAddons = ComposerAddonDiscovery::discoverComposerAddons();
+$otherAddons = array_filter($allAddons, function($pkg) {
+    return $pkg !== 'klxm/redaxo-composer-demo-addon';
+});
+
+$crossAddonContent = '
+<div class="alert alert-success">
+    <h4><i class="rex-icon fa-sitemap"></i> Cross-AddOn Settings Zugriff</h4>
+    <p>Demonstration wie man auf Settings von <strong>anderen</strong> Composer AddOns zugreift:</p>
+</div>
+';
+
+if (empty($otherAddons)) {
+    $crossAddonContent .= '
+    <div class="alert alert-info">
+        <p><i class="rex-icon fa-info-circle"></i> <strong>Aktuell keine anderen Composer AddOns installiert.</strong></p>
+        <p>Installiere ein anderes Composer AddOn um dieses Feature zu demonstrieren:</p>
+        <pre><code>composer require vendor/other-addon</code></pre>
+    </div>
+    ';
+} else {
+    $crossAddonContent .= '<div class="table-responsive"><table class="table table-striped">';
+    $crossAddonContent .= '<thead><tr>';
+    $crossAddonContent .= '<th>Anderes AddOn</th>';
+    $crossAddonContent .= '<th>Aktiv?</th>';
+    $crossAddonContent .= '<th>Settings</th>';
+    $crossAddonContent .= '<th>Code-Beispiel</th>';
+    $crossAddonContent .= '</tr></thead><tbody>';
+    
+    foreach ($otherAddons as $pkgName => $addonData) {
+        $isActive = ComposerAddonHelper::isActive($pkgName);
+        $settings = $isActive ? ComposerAddonHelper::getSettings($pkgName) : [];
+        
+        $crossAddonContent .= '<tr>';
+        $crossAddonContent .= '<td><code>' . rex_escape($pkgName) . '</code></td>';
+        $crossAddonContent .= '<td>' . ($isActive ? '<span class="label label-success">✅ Aktiv</span>' : '<span class="label label-default">❌ Inaktiv</span>') . '</td>';
+        $crossAddonContent .= '<td>';
+        if (!empty($settings)) {
+            $crossAddonContent .= '<details><summary>' . count($settings) . ' Settings</summary>';
+            $crossAddonContent .= '<pre style="font-size: 11px; margin-top: 10px;">' . rex_escape(print_r($settings, true)) . '</pre>';
+            $crossAddonContent .= '</details>';
+        } else {
+            $crossAddonContent .= '<span class="text-muted">Keine Settings</span>';
+        }
+        $crossAddonContent .= '</td>';
+        
+        $crossAddonContent .= '<td><pre style="font-size: 11px; margin: 0;"><code>' . rex_escape("// Zugriff von diesem AddOn:
+if (ComposerAddonHelper::isActive('$pkgName')) {
+    \$settings = ComposerAddonHelper::getSettings('$pkgName');
+    \$value = ComposerAddonHelper::getSetting('$pkgName', 'key', 'default');
+}") . '</code></pre></td>';
+        $crossAddonContent .= '</tr>';
+    }
+    
+    $crossAddonContent .= '</tbody></table></div>';
+}
+
+$crossAddonContent .= '
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">Use-Cases für Cross-AddOn Settings:</h4>
+    </div>
+    <div class="panel-body">
+        <dl>
+            <dt>1. AddOn-Abhängigkeiten mit Konfiguration:</dt>
+            <dd>
+                <pre><code class="language-php">' . rex_escape('// Mein AddOn nutzt "vendor/mailer-addon"
+if (ComposerAddonHelper::isActive(\'vendor/mailer-addon\')) {
+    $smtpHost = ComposerAddonHelper::getSetting(\'vendor/mailer-addon\', \'smtp_host\');
+    $smtpPort = ComposerAddonHelper::getSetting(\'vendor/mailer-addon\', \'smtp_port\', 587);
+    $mailer = new Mailer($smtpHost, $smtpPort);
+}') . '</code></pre>
+            </dd>
+            
+            <dt>2. Feature-Integration zwischen AddOns:</dt>
+            <dd>
+                <pre><code class="language-php">' . rex_escape('// Prüfe ob Analytics-AddOn eine bestimmte Feature hat
+if (ComposerAddonHelper::isActive(\'vendor/analytics\')) {
+    $features = ComposerAddonHelper::getSetting(\'vendor/analytics\', \'features\', []);
+    if ($features[\'ecommerce\'] ?? false) {
+        // Nutze E-Commerce Tracking
+        Analytics::trackPurchase($order);
+    }
+}') . '</code></pre>
+            </dd>
+            
+            <dt>3. Plugin-System mit Provider-Pattern:</dt>
+            <dd>
+                <pre><code class="language-php">' . rex_escape('// Sammle alle Payment-Provider AddOns
+$providers = [
+    \'vendor/payment-paypal\',
+    \'vendor/payment-stripe\',
+    \'vendor/payment-invoice\'
+];
+
+foreach ($providers as $pkg) {
+    if (ComposerAddonHelper::isActive($pkg)) {
+        $config = ComposerAddonHelper::getSettings($pkg);
+        $paymentMethods[] = new PaymentProvider(
+            $config[\'api_key\'] ?? \'\',
+            $config[\'endpoint\'] ?? \'\'
+        );
+    }
+}') . '</code></pre>
+            </dd>
+        </dl>
+    </div>
+</div>
+';
+
+$crossAddonFragment->setVar('title', 'Cross-AddOn Settings (Zugriff auf andere AddOns)');
+$crossAddonFragment->setVar('body', $crossAddonContent, false);
+$content .= $crossAddonFragment->parse('core/page/section.php');
 
 echo $content;
