@@ -22,7 +22,7 @@
         "redaxo": {
             "addon-key": "redaxo_composer_demo_addon",
             "name": "REDAXO Composer Demo AddOn",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "author": "KLXM",
             "supportpage": "https://github.com/klxm/redaxo-composer-demo-addon"
         }
