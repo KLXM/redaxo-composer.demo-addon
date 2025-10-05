@@ -116,7 +116,7 @@ $manifestInfoContent = '
     <h4><i class="rex-icon fa-file-code-o"></i> Manifest Settings Zugriff</h4>
     
     <h5>Alle Settings aus redaxo-addon.json:</h5>
-    <pre><code>' . htmlspecialchars(print_r(ComposerAddonHelper::getCurrentSettings(), true)) . '</code></pre>
+    <pre><code>' . rex_escape(print_r(ComposerAddonHelper::getCurrentSettings(), true)) . '</code></pre>
     
     <h5>Einzelne Settings abrufen:</h5>
     <dl class="dl-horizontal">
@@ -124,23 +124,23 @@ $manifestInfoContent = '
         <dd><code>' . var_export(ComposerAddonHelper::getCurrentSetting('feature_enabled', true), true) . '</code></dd>
         
         <dt>api_key</dt>
-        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getCurrentSetting('api_key', '(leer)')) . '</code></dd>
+        <dd><code>' . rex_escape(ComposerAddonHelper::getCurrentSetting('api_key', '(leer)')) . '</code></dd>
     </dl>
     
     <h5>Weitere Helper-Methoden:</h5>
     <dl class="dl-horizontal">
         <dt>Version</dt>
-        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getVersion('klxm/redaxo-composer-demo-addon') ?? 'unbekannt') . '</code></dd>
+        <dd><code>' . rex_escape(ComposerAddonHelper::getVersion('klxm/redaxo-composer-demo-addon') ?? 'unbekannt') . '</code></dd>
         
         <dt>AddOn-Pfad</dt>
-        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getPath('klxm/redaxo-composer-demo-addon') ?? '') . '</code></dd>
+        <dd><code>' . rex_escape(ComposerAddonHelper::getPath('klxm/redaxo-composer-demo-addon')) . '</code></dd>
         
         <dt>Assets-URL</dt>
-        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getAssetsUrl('klxm/redaxo-composer-demo-addon', 'demo.css') ?? '') . '</code></dd>
+        <dd><code>' . rex_escape(ComposerAddonHelper::getAssetsUrl('klxm/redaxo-composer-demo-addon', 'demo.css')) . '</code></dd>
     </dl>
     
     <h5>Code-Beispiel:</h5>
-    <pre><code class="language-php">' . htmlspecialchars('<?php
+    <pre><code class="language-php">' . rex_escape('<?php
 use KLXM\Composer\ComposerAddonHelper;
 
 // In Backend-Seiten (mit Kontext):

@@ -2,7 +2,7 @@
     "package": "klxm/redaxo-composer-demo-addon",
     "name": "REDAXO Composer Demo AddOn",
     "description": "Demonstration des modernen REDAXO Composer AddOn Systems",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "author": "KLXM <info@klxm.de>",
     "supportpage": "https://github.com/klxm/redaxo-composer-demo-addon",
     "requires": {
@@ -25,6 +25,17 @@
     },
     "default_config": {
         "demo_setting": "Hallo REDAXO Composer!",
-        "show_debug": false
+        "show_debug": false,
+        "api_key": "demo-api-key-12345",
+        "max_items": 10,
+        "enable_caching": true,
+        "cache_lifetime": 3600,
+        "allowed_file_types": ["jpg", "png", "gif", "pdf"],
+        "notification_email": "admin@example.com",
+        "feature_flags": {
+            "new_editor": true,
+            "experimental_mode": false,
+            "analytics": true
+        }
     }
 }
