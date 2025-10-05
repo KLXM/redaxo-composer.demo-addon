@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Demo AddOn - Einste//// Einstellungsformular
-$formContent = '
-<form method="post">';nstellungsformular
-$formContent = '
-<form method="post">';ngen
+ * Demo AddOn - Einstellungen
+ * Zeigt auch wie man auf Manifest-Settings zugreift
  */
+
+use KLXM\Composer\ComposerAddonHelper;
 
 // Lade DemoManager-Klasse manuell falls Autoloading nicht funktioniert
 if (!class_exists('Klxm\RedaxoComposerDemoAddon\DemoManager')) {
@@ -110,5 +109,56 @@ $infoFragment = new rex_fragment();
 $infoFragment->setVar('title', 'System Information');
 $infoFragment->setVar('body', $infoContent, false);
 $content .= $infoFragment->parse('core/page/section.php');
+
+// Manifest Settings Demo
+$manifestInfoContent = '
+<div class="alert alert-success">
+    <h4><i class="rex-icon fa-file-code-o"></i> Manifest Settings Zugriff</h4>
+    
+    <h5>Alle Settings aus redaxo-addon.json:</h5>
+    <pre><code>' . htmlspecialchars(print_r(ComposerAddonHelper::getCurrentSettings(), true)) . '</code></pre>
+    
+    <h5>Einzelne Settings abrufen:</h5>
+    <dl class="dl-horizontal">
+        <dt>feature_enabled</dt>
+        <dd><code>' . var_export(ComposerAddonHelper::getCurrentSetting('feature_enabled', true), true) . '</code></dd>
+        
+        <dt>api_key</dt>
+        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getCurrentSetting('api_key', '(leer)')) . '</code></dd>
+    </dl>
+    
+    <h5>Weitere Helper-Methoden:</h5>
+    <dl class="dl-horizontal">
+        <dt>Version</dt>
+        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getVersion('klxm/redaxo-composer-demo-addon') ?? 'unbekannt') . '</code></dd>
+        
+        <dt>AddOn-Pfad</dt>
+        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getPath('klxm/redaxo-composer-demo-addon')) . '</code></dd>
+        
+        <dt>Assets-URL</dt>
+        <dd><code>' . htmlspecialchars(ComposerAddonHelper::getAssetsUrl('klxm/redaxo-composer-demo-addon', 'demo.css')) . '</code></dd>
+    </dl>
+    
+    <h5>Code-Beispiel:</h5>
+    <pre><code class="language-php">' . htmlspecialchars('<?php
+use KLXM\Composer\ComposerAddonHelper;
+
+// In Backend-Seiten (mit Kontext):
+$settings = ComposerAddonHelper::getCurrentSettings();
+$apiKey = ComposerAddonHelper::getCurrentSetting(\'api_key\', \'default\');
+
+// In anderen Klassen (mit Package-Name):
+$packageName = \'klxm/redaxo-composer-demo-addon\';
+$settings = ComposerAddonHelper::getSettings($packageName);
+$version = ComposerAddonHelper::getVersion($packageName);
+$path = ComposerAddonHelper::getPath($packageName, \'config/settings.yml\');
+') . '</code></pre>
+</div>
+';
+
+$manifestFragment = new rex_fragment();
+$manifestFragment->setVar('title', 'Manifest Settings API');
+$manifestFragment->setVar('body', $manifestInfoContent, false);
+$content .= $manifestFragment->parse('core/page/section.php');
 
 echo $content;
