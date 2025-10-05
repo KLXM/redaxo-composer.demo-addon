@@ -4,6 +4,11 @@
  * Demo AddOn - Hauptseite
  */
 
+// Lade Boot-Klasse manuell falls Autoloading nicht funktioniert
+if (!class_exists('Klxm\RedaxoComposerDemoAddon\Boot')) {
+    require_once __DIR__ . '/../src/Boot.php';
+}
+
 use Klxm\RedaxoComposerDemoAddon\Boot;
 
 $content = '';
@@ -29,6 +34,20 @@ $fragment->setVar('body', '
             <li>✅ Asset-Management</li>
         </ul>
 
+        <h4>Gespeicherte Einstellungen:</h4>
+        <div class="well">
+            <table class="table table-striped">
+                <tr>
+                    <td><strong>Demo Text:</strong></td>
+                    <td>' . rex_escape(rex_config::get('redaxo_composer_demo_addon', 'demo_setting', 'Nicht gesetzt')) . '</td>
+                </tr>
+                <tr>
+                    <td><strong>Debug anzeigen:</strong></td>
+                    <td>' . (rex_config::get('redaxo_composer_demo_addon', 'show_debug', false) ? '✅ Ja' : '❌ Nein') . '</td>
+                </tr>
+            </table>
+        </div>
+
         <h4>Debug Information:</h4>
         <div class="well">
             <pre>' . rex_escape(print_r($debugInfo, true)) . '</pre>
@@ -46,7 +65,17 @@ $fragment->setVar('body', '
 $content .= $fragment->parse('core/page/section.php');
 
 // Aktuelle Konfiguration anzeigen
-$config = rex_config::get('redaxo_composer_demo_addon', []);
+$config = rex_config::get('redaxo_composer_demo_addon') ?: [];
+
+$configRows = '';
+foreach ($config as $key => $value) {
+    $displayValue = is_bool($value) ? ($value ? 'true' : 'false') : $value;
+    $configRows .= '
+            <tr>
+                <td><code>' . rex_escape($key) . '</code></td>
+                <td>' . rex_escape($displayValue) . '</td>
+            </tr>';
+}
 
 $configFragment = new rex_fragment();
 $configFragment->setVar('title', 'Aktuelle Konfiguration');
@@ -59,19 +88,7 @@ $configFragment->setVar('body', '
                 <th>Wert</th>
             </tr>
         </thead>
-        <tbody>
-');
-
-foreach ($config as $key => $value) {
-    $configFragment->setVar('body', $configFragment->getVar('body') . '
-            <tr>
-                <td><code>' . rex_escape($key) . '</code></td>
-                <td>' . rex_escape(is_bool($value) ? ($value ? 'true' : 'false') : $value) . '</td>
-            </tr>
-    ');
-}
-
-$configFragment->setVar('body', $configFragment->getVar('body') . '
+        <tbody>' . $configRows . '
         </tbody>
     </table>
 </div>

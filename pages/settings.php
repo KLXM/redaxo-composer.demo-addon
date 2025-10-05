@@ -1,8 +1,17 @@
 <?php
 
 /**
- * Demo AddOn - Einstellungen
+ * Demo AddOn - Einste//// Einstellungsformular
+$formContent = '
+<form method="post">';nstellungsformular
+$formContent = '
+<form method="post">';ngen
  */
+
+// Lade DemoManager-Klasse manuell falls Autoloading nicht funktioniert
+if (!class_exists('Klxm\RedaxoComposerDemoAddon\DemoManager')) {
+    require_once __DIR__ . '/../src/DemoManager.php';
+}
 
 $content = '';
 $message = '';
@@ -26,9 +35,13 @@ $showDebug = rex_config::get('redaxo_composer_demo_addon', 'show_debug', false);
 
 $content .= $message;
 
-// Einstellungsformular
+// Einstellungsformular mit Hidden Fields für GET-Parameter
 $formContent = '
-<form action="' . rex_url::currentBackendPage() . '" method="post">
+<form method="post">
+    <input type="hidden" name="page" value="' . rex_escape(rex_get('page')) . '">
+    <input type="hidden" name="composer_addon" value="' . rex_escape(rex_get('composer_addon')) . '">
+    <input type="hidden" name="subpage" value="' . rex_escape(rex_get('subpage')) . '">
+    
     <fieldset>
         <legend>REDAXO Composer Demo AddOn Einstellungen</legend>
         

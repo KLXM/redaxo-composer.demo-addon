@@ -23,7 +23,7 @@ class DemoManager
     /**
      * Konfiguration abrufen
      */
-    public static function getConfig(string $key = null, $default = null)
+    public static function getConfig(?string $key = null, $default = null)
     {
         if ($key === null) {
             return rex_config::get(self::ADDON_KEY, []);

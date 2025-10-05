@@ -36,8 +36,9 @@ class Boot
         
         // Backend Assets hinzufügen (nur im Backend)
         if (rex::isBackend()) {
-            rex_view::addCssFile(rex_url::addonAssets('redaxo_composer_demo_addon', 'demo.css'));
-            rex_view::addJsFile(rex_url::addonAssets('redaxo_composer_demo_addon', 'demo.js'));
+            $assetsUrl = rex_url::assets('addons/composer_addons/klxm_redaxo-composer-demo-addon');
+            rex_view::addCssFile($assetsUrl . '/demo.css');
+            rex_view::addJsFile($assetsUrl . '/demo.js');
         }
     }
 
@@ -61,7 +62,7 @@ class Boot
      */
     public static function getAssetUrl(string $file): string
     {
-        return rex_url::addonAssets('redaxo_composer_demo_addon', $file);
+        return rex_url::assets('addons/composer_addons/klxm_redaxo-composer-demo-addon/' . $file);
     }
 
     /**
@@ -73,7 +74,7 @@ class Boot
             'addon_name' => 'REDAXO Composer Demo AddOn',
             'version' => '1.0.0',
             'loaded_via' => 'Composer Discovery System',
-            'config' => rex_config::get('redaxo_composer_demo_addon', []),
+            'config' => rex_config::get('redaxo_composer_demo_addon') ?: [],
             'boot_time' => date('Y-m-d H:i:s')
         ];
     }
